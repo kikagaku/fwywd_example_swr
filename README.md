@@ -1,3 +1,138 @@
+# SWR でグローバルに状態管理をするときのベストプラクティス
+
+SWR はデータの取得からキャッシュの管理、そしてグローバルに状態の管理までできる非常に便利なライブラリです。  
+グローバルな状態管理という文脈では Recoil も有名です。  
+fwywd のチームでは外部からのデータ取得があるケースは SWR, そうでない場合には Recoil と使い分けています。
+
+その便利なライブラリである SWR のベストプラクティスを紹介します。  
+グローバルな状態管理は非常に便利な一方で React の Custom Hooks で `useState` と同じように使うと状態管理が崩壊するリスクがあります。  
+SWR で管理している値にアクセスしたい getter 系と、状態を変化させる setter 系は分けて定義するようにしましょう。
+
+今回は `count` を状態として管理し、カウントアップを行う非常に簡単な例です。  
+getter と setter を分けないことで、どのような落とし穴があるか簡単に理解することができます。
+
+## step1
+
+<img src="https://i.gyazo.com/6cfbb4147fcaab3ff131853202f2060c.gif" alt="step1" width="400"/>
+
+`useCount` に `count` と `countUp` をすべて含んだ場合です。
+
+```typescript:hook/useCount.ts
+import useSWR from 'swr';
+
+interface UseCount {
+  count?: number | null;
+  countUp: () => void;
+}
+
+export const useCount = (): UseCount => {
+  // 非同期処理の疑似的に再現
+  const getCount = async (): Promise<number> => {
+    return 0;
+  };
+
+  const { data: count, mutate } = useSWR('count', getCount);
+
+  const countUp = (): void => {
+    mutate((prevCount) => {
+      if (prevCount !== undefined) return prevCount + 1;
+    }, false);
+  };
+
+  return { count, countUp };
+};
+```
+
+```typescript:component/CountUp.tsx
+import { useCount } from '@/hook/useCount';
+
+export const CountUp: React.FC = () => {
+  const { countUp } = useCount();
+  return (
+    <div>
+      <button
+        onClick={countUp}
+        className='rounded bg-primary-800 px-4 py-2 text-white hover:opacity-70'
+      >
+        UseCount 経由の カウントアップ
+      </button>
+    </div>
+  );
+};
+```
+
+`countUp` 自体は `count` に依存していないのですが、`count` が変化すると `useCount` に含まれている全てに影響があり、`countUp` を含んだボタンも再レンダリングされていることがわかります。
+
+`mutate` は `setState` とほぼ同じ書き方です。
+書き方のコツとして `prevCount` のように `mutate` や `setState` の関数内で Read only な状態を取得することができます。
+この方法で状態を更新すれば、状態を Subscribe していないため、状態が変化しても影響を受けることがありません。
+レンダリングの抑制などには不可欠な書き方と言えます。
+
+## step2
+
+`count` の状態を変化させる setter 系の処理をすべて `useSetCount` に寄せます。
+
+<img src="https://i.gyazo.com/e9a4d98a523b8029f7fb6f40b40a9765.gif" alt="Step2" width="400"/>
+
+```typescript:useCount.ts
+import useSWR, { useSWRConfig } from 'swr';
+
+interface UseSetCount {
+  countUp: () => void;
+}
+
+interface UseCount extends UseSetCount {
+  count?: number | null;
+}
+
+export const useCount = (): UseCount => {
+  // 非同期処理の疑似的に再現
+  const getCount = async (): Promise<number> => {
+    return 0;
+  };
+
+  const { data: count } = useSWR('count', getCount);
+
+  const setter = useSetCount();
+
+  return { count, ...setter };
+};
+
+export const useSetCount = (): UseSetCount => {
+  const { mutate } = useSWRConfig();
+
+  const countUp = (): void => {
+    mutate(
+      'count',
+      (count?: number) => {
+        if (count !== undefined) return count + 1;
+      },
+      false,
+    );
+  };
+
+  return { countUp };
+};
+```
+
+```typescript:component/CountUp.tsx
+import { useSetCount } from '@/hook/useCount';
+
+export const CountUp: React.FC = () => {
+  const { countUp } = useSetCount();
+  return (
+    <div>
+      <button
+        onClick={countUp}
+        className='rounded bg-primary-800 px-4 py-2 text-white hover:opacity-70'
+      >
+        UseSetCount 経由の カウントアップ
+      </button>
+    </div>
+  );
+};
+```
+
 ## Getting Started
 
 ### パッケージのインストール
