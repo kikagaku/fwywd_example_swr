@@ -1,0 +1,62 @@
+{
+  "name": "kikagaku-nextjs-starter-kit",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint --dir src",
+    "test": "jest",
+    "test:dev": "jest --watch",
+    "sb": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public",
+    "generate": "plop --plopfile ./generator/plopfile.js"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "printWidth": 100
+  },
+  "dependencies": {
+    "next": "^12.1.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@hookform/resolvers": "^2.8.8",
+    "@next/eslint-plugin-next": "^12.1.0",
+    "@storybook/addon-actions": "^6.4.19",
+    "@storybook/addon-essentials": "^6.4.19",
+    "@storybook/addon-links": "^6.4.19",
+    "@storybook/builder-webpack5": "^6.4.19",
+    "@storybook/manager-webpack5": "^6.4.19",
+    "@storybook/react": "^6.4.19",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.3",
+    "@types/react": "^17.0.39",
+    "autoprefixer": "^10.4.2",
+    "babel-loader": "^8.2.3",
+    "eslint": "^8.9.0",
+    "eslint-config-next": "^12.1.0",
+    "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-storybook": "^0.5.7",
+    "eslint-plugin-testing-library": "^5.0.5",
+    "jest": "^27.5.1",
+    "plop": "^3.0.5",
+    "postcss": "^8.4.7",
+    "prettier": "^2.5.1",
+    "prettier-plugin-tailwindcss": "^0.1.8",
+    "react-hook-form": "^7.27.1",
+    "storybook-addon-next": "^1.4.4",
+    "tailwindcss": "^3.0.23",
+    "tsconfig-paths-webpack-plugin": "^3.5.2",
+    "typescript": "^4.5.5",
+    "webpack": "^5.70.0",
+    "zod": "^3.12.0"
+  }
+}
