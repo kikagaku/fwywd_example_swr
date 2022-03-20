@@ -17,7 +17,8 @@ getter と setter を分けないことで、どのような落とし穴があ�
 
 `useCount` に `count` と `countUp` をすべて含んだ場合です。
 
-```typescript:hook/useCount.ts
+```typescript
+// hook/useCount.ts
 import useSWR from 'swr';
 
 interface UseCount {
@@ -43,7 +44,8 @@ export const useCount = (): UseCount => {
 };
 ```
 
-```typescript:component/CountUp.tsx
+```typescript
+// component/CountUp.tsx
 import { useCount } from '@/hook/useCount';
 
 export const CountUp: React.FC = () => {
@@ -74,7 +76,8 @@ export const CountUp: React.FC = () => {
 
 <img src="https://i.gyazo.com/e9a4d98a523b8029f7fb6f40b40a9765.gif" alt="Step2" width="400"/>
 
-```typescript:useCount.ts
+```typescript
+// hook/useCount.ts
 import useSWR, { useSWRConfig } from 'swr';
 
 interface UseSetCount {
@@ -115,7 +118,8 @@ export const useSetCount = (): UseSetCount => {
 };
 ```
 
-```typescript:component/CountUp.tsx
+```typescript
+// component/CountUp.tsx
 import { useSetCount } from '@/hook/useCount';
 
 export const CountUp: React.FC = () => {
